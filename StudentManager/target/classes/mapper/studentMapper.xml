@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.canJ.pojo.Student">
+    <select id="findStudent" resultType="com.canJ.pojo.Student">
+           SELECT * FROM student
+        <!-- where自动可以省略and 和 or ,where 标签内没有逗号 -->
+           <where>
+               <if test="stu_id != null">
+                   stu_id = #{stu_id}
+               </if>
+           </where>
+ </select>
+
+    <!--<resultMap id="forStudent" type="com.canJ.pojo.Student">-->
+        <!--<id column="stu_id" property="stu_id"></id>-->
+        <!--<collection property="courses" column="cour_id" ofType="com.canJ.pojo.Course" select="getCourses"></collection>-->
+    <!--</resultMap>-->
+
+    <!--&lt;!&ndash; ofType 是list里面的内容，select返回的结果一般都是和它一样 &ndash;&gt;-->
+    <!--<select id="getCourses" resultType="com.canJ.pojo.Course">-->
+        <!--select * from course where stu_id = #{stu_id}-->
+    <!--</select>-->
+    <delete id="deleteStudent">
+        DELETE FROM student WHERE stu_id = #{stu_id}
+    </delete>
+
+    <update id="updateStudent">
+        update student
+        <set>
+            <if test="stu_name != null">
+                stu_name = #{stu_name},
+            </if>
+            <if test="academy_id != null">
+                academy_id = #{academy_id},
+            </if>
+            <if test="stu_gender != null">
+                stu_gender = #{stu_gender},
+            </if>
+            <if test="stu_birth != null">
+                stu_birth = #{stu_birth},
+            </if>
+            <if test="stu_addr != null">
+                stu_addr = #{stu_addr}
+            </if>
+        </set>
+        where
+        <if test="stu_id != null">
+            stu_id = #{stu_id}
+        </if>
+    </update>
+
+    <sql id="insert">
+        stu_number,academy_id,stu_name,stu_gender,stu_birth,stu_addr
+    </sql>
+
+    <insert id="insertStudent">
+        insert into student(<include refid="insert"></include> )
+        values (#{stu_number},#{academy_id},#{stu_name},#{stu_gender},#{stu_birth},#{stu_addr})
+    </insert>
+
+    <!-- 用来进行模糊查询 -->
+    <select id="search" parameterType="java.lang.String" resultType="com.canJ.pojo.Student">
+        select * from student
+        <where>
+            <if test="#{_parameter} != null">
+                stu_number like CONCAT('%',#{_parameter},'%')
+            </if>
+            <if test="#{_parameter} != null">
+                or stu_name  like CONCAT('%',#{_parameter},'%')
+            </if>
+            <if test="#{_parameter} != null">
+                or stu_gender like CONCAT('%',#{_parameter},'%')
+            </if>
+            <if test="#{_parameter} != null">
+                or stu_birth like binary CONCAT('%',#{_parameter},'%')
+            </if>
+            <if test="#{_parameter} != null">
+                or stu_addr like CONCAT('%',#{_parameter},'%')
+            </if>
+        </where>
+    </select>
+
+</mapper>
